@@ -1,0 +1,351 @@
+# Name of the application.
+applicationName: "application-helm"
+
+deployment:
+
+  # By default deploymentStrategy is set to rollingUpdate
+  # You can change type to `Recreate` or can uncomment `rollingUpdate` specification and adjust them to your usage.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  
+  # Select nodes to deploy which matches the following labels  
+  nodeSelector:
+    # cloud.google.com/gke-nodepool: default-pool  
+
+  # If needed to setup host aliases
+  hostAliases: 
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #   - "foo.local"
+  #   - "bar.local"
+
+  # Init containers which runs before the app container
+  initContainers:
+  # - name: init-contaner
+  #   image: busybox
+  #   imagePullPolicy: IfNotPresent
+  #   command: ['/bin/sh']    
+
+  # Additional labels for Deployment
+  labels:
+    # key: value
+  
+  # Additional label added on pod which is used in Service's Label Selector
+  podLabels: 
+    # env: prod
+
+  # Annotations on deployments
+  annotations:
+
+  # Additional Pod Annotations added on pod created by this Deployment
+  podAnnotations:
+    # key: value
+
+  # Replicas to be created
+  replicas: 1
+
+  # Revision History Limit for Replica Sets
+  revisionHistoryLimit: 4
+
+  # Secrets used to pull image
+  imagePullSecrets:
+  # - name: quay-regcred
+
+  # If want to mount Envs from configmap or secret
+  envFrom: []
+  # - type: configmap
+  #   name: my-configmap
+  # - type: secret
+  #   name: my-secret
+
+  # Environment variables to be passed to the app container
+  env:
+  # - name: ENVIRONMENT
+  #   value: "dev"
+  
+  # Volumes to be added to the pod
+  volumes:
+    # - name: config-volume
+    #   configMap:        
+    #     name: configmap-name
+    # - name: configmap-volume
+    #   configMap:
+    #     name: '{{ template "application.name" . }}-configmap-nameSuffix'
+    # - name: secret-volume
+    #   secret:        
+    #     secretName: secret-name
+    # - name: volume-name
+    #   emptyDir: {}
+    # - name: persistent-volume-name
+    #   persistentVolumeClaim:
+    #     claimName: claim-name
+
+  # Mount path for Volumes 
+  volumeMounts:
+    # - mountPath: /path
+    #   name: volume-name
+
+  # Taint tolerations for nodes
+  tolerations:
+    # - key: "dedicated"
+    #   operator: "Equal"
+    #   value: "app"
+    #   effect: "NoSchedule"
+
+  # Pod affinity and pod anti-affinity allow you to specify rules about how pods should be placed relative to other pods.
+  affinity:
+  #  nodeAffinity:
+  #    requiredDuringSchedulingIgnoredDuringExecution:
+  #      nodeSelectorTerms:
+  #      - matchExpressions:
+  #        - key: disktype
+  #          operator: In
+  #          values:
+  #          - ssd
+
+  # Image of the app container
+  image: 
+    repository: repository/image-name
+    tag: v1.0.0
+    pullPolicy: IfNotPresent
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  # probes definitions
+  probes:
+    startupProbe:
+      failureThreshold: 30
+      periodSeconds: 10
+      httpGet:
+        path: /actuator/health
+        port: actuator
+    readinessProbe:
+      failureThreshold: 3
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+      initialDelaySeconds: 10
+      httpGet:
+        path: /actuator/health
+        port: actuator
+    livenessProbe:
+      failureThreshold: 3
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+      httpGet:
+        path: /actuator/health
+        port: actuator
+
+  # Resources to be defined for pod
+  resources: 
+    # limits:
+    #   memory: 512Mi
+    #   cpu: 0.5
+    # requests:
+    #   memory: 128Mi
+    #   cpu: 0.2
+
+  # Add additional containers besides init and app containers
+  additionalContainers:
+  # - name: sidecar-contaner
+  #   image: busybox
+  #   imagePullPolicy: IfNotPresent
+  #   command: ['/bin/sh']
+
+  # Security Context for the pod
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 3000
+    fsGroup: 2000
+    
+
+# Add Storage volumes to the pods
+persistence:
+  enabled: false
+  mountPVC: false
+  mountPath: "/"
+  accessMode: ReadWriteOnce
+  ## If defined, storageClass: <storageClass>
+  ## If set to "-", storageClass: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClass spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  storageClass: ""
+  # Additional label added on PVC 
+  labels:
+    # key: "value"
+  annotations:
+  #  "helm.sh/resource-policy": keep
+  storageSize: 8Gi
+
+# Service object for servicing pods
+service:
+# Additional label added on Service
+  labels:
+    # monitoring: "true"
+  annotations:
+  type: ClusterIP
+  # add ports block to service & deployment, can add ports: 
+  # PORT_NAME: PORT_NUMBER
+  ports:
+  - web: 8080
+  - actuator: 8081
+  # ingress_port is used in Ingress & tests
+  ingress_port: 8080
+
+# Ingress object for exposing services
+ingresses:
+  enabled: false
+  manifests:
+  # nameSuffix is the suffix to add in name of Ingress, default name is application-name
+  - nameSuffix: ""
+    # List of host addresses to be exposed by this Ingress
+    hosts:
+      - host:  chart-example.local
+        paths:
+        - /path1
+    
+    # Add annotations to this Ingress
+    annotations:
+      # kubernetes.io/ingress.class: external-ingress
+      # ingress.kubernetes.io/rewrite-target: /
+      # ingress.kubernetes.io/force-ssl-redirect: true
+
+    # TLS details for this Ingress
+    tls:
+      # Secrets must be manually created in the namespace.
+      # - secretName: chart-example-tls
+      #   hosts:
+      #     - chart-example.local
+
+# Role Based Access Control
+rbac:
+  enabled: true
+
+  # Service Account to use by pods
+  serviceAccount:
+    enabled: true
+    name: ""
+
+    # Additional Labels on service account
+    labels:
+      # key: value
+    
+    # Annotations on service account 
+    annotations:
+      # key: value
+
+  existingRoles: 
+  # - name: springboot
+
+  # Create Roles (Namespaced)
+  roles:
+  # - name: configmaps
+  #   rules:
+  #   - apiGroups:
+  #     - ""
+  #     resources:
+  #     - configmaps
+  #     verbs:
+  #     - get
+  # - name: secrets
+  #   rules:
+  #   - apiGroups:
+  #     - ""
+  #     resources:
+  #     - secrets
+  #     verbs:
+  #     - get
+
+  existingClusterroles: 
+  # - name: springboot
+  # Create ClusterRoles (Clusterwide)
+  clusterroles:
+  # - name: configmaps
+  #   rules:
+  #   - apiGroups:
+  #     - ""
+  #     resources:
+  #     - configmaps
+  #     verbs:
+  #     - get
+  # - name: pods
+  #   rules:
+  #   - apiGroups:
+  #     - ""
+  #     resources:
+  #     - pods
+  #     verbs:
+  #     - get
+  #     - list
+  #     - watch
+
+# Additional ConfigMaps  
+configMap:
+  enabled: false
+  labels: 
+    # key: value
+  annotations: 
+    # key: value
+  files:
+  # - nameSuffix: code-config    
+  #   data:
+  #     key1: value1
+  #     key2: value2
+  # - nameSuffix: dev-config
+  #   data:
+  #     key1: value1
+  #     key2: value2
+
+# Additional Secrets
+secret:
+  enabled: false
+  labels: 
+    # key: value
+  annotations: 
+    # key: value
+  files:
+  # - nameSuffix: credentials
+  #   data:
+  #     secretKey1: secretValue1
+  #     secretKey2: secretValue2
+  # - nameSuffix: password
+  #   data:
+  #     secretKey1: secretValue1
+  #     secretKey2: secretValue2
+
+# autoscaling is used for horizonal pod autoscaling
+autoscaling:
+# enabled is a boolean flag for enabling or disabling autoscaling 
+  enabled: false
+# additional Labels on HPA
+  labels: 
+    # key: value
+# annotations defines annotations in key value pair
+  annotations: 
+    # key: value
+# minReplicas sets the minimum number of replicas
+  minReplicas: 1
+# maxReplicas sets the maximum number of replicas
+  maxReplicas: 10
+# metrics is the list of metrics used for hpa
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 60
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: 60
+
