@@ -1,0 +1,25 @@
+{{- if .Values.service }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+{{ include "application.labels" . | indent 4 }}
+{{ include "application.labels.chart" . | indent 4 }}
+{{- if .Values.service.labels }}
+{{ toYaml .Values.service.labels | indent 4 }}
+{{- end }}
+{{- if .Values.service.annotations }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "application.name" . }}
+spec:
+  type: {{ .Values.service.type }}
+{{- if .Values.deployment.podLabels }}
+{{ toYaml .Values.deployment.podLabels | indent 4 }}
+{{- end }}
+  ports:
+{{- include "helpers.list-service-ports" . | nindent 4 }}
+{{- end }}
+  selector:
+{{ include "application.labels.selector" . | indent 4 }}

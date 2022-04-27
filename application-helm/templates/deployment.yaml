@@ -1,0 +1,138 @@
+{{- if .Values.deployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+{{ include "application.labels" . | indent 4 }}
+{{ include "application.labels.chart" . | indent 4 }}
+    app.kubernetes.io/appVersion: "{{ .Values.deployment.image.tag }}"
+{{- if .Values.deployment.labels }}
+{{ toYaml .Values.deployment.labels | indent 4 }}
+{{- end }}
+{{- if .Values.deployment.annotations }}
+  annotations:
+{{ toYaml .Values.deployment.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "application.name" . }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+{{ include "application.labels.selector" . | indent 6 }}
+{{- if .Values.deployment.strategy }}
+  strategy:
+{{ toYaml .Values.deployment.strategy | indent 4 }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+{{- if .Values.deployment.podAnnotations }}
+{{ toYaml .Values.deployment.podAnnotations | indent 8 }}
+{{- end }}
+      labels:
+{{ include "application.labels.selector" . | indent 8 }}
+{{- if .Values.deployment.podLabels }}
+{{ toYaml .Values.deployment.podLabels | indent 8 }}
+{{- end }}
+    spec:
+      {{- if .Values.deployment.hostAliases }}
+      hostAliases:
+{{ toYaml .Values.deployment.hostAliases | indent 6 }}
+      {{- end }}
+      {{- if .Values.deployment.initContainers }}
+      initContainers:
+{{ toYaml .Values.deployment.initContainers | indent 6 }}
+      {{- end }}
+      {{- if .Values.deployment.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.deployment.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.deployment.tolerations }}
+      tolerations:
+{{ toYaml .Values.deployment.tolerations | indent 8 -}}
+      {{- end }}
+      {{- if .Values.deployment.affinity }}
+      affinity:
+      {{ toYaml .Values.deployment.affinity | indent 8 -}}
+      {{- end }}
+      {{- with .Values.deployment.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ template "application.name" . }}
+        image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
+        imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+        {{- if .Values.deployment.containerSecurityContext }}
+        securityContext:      
+{{ toYaml .Values.deployment.containerSecurityContext | indent 10 }}
+          {{- end }}
+        {{- if .Values.deployment.envFrom }}
+        envFrom:
+        {{- range .Values.deployment.envFrom }}
+        {{- if (eq .type "configmap") }}
+        - configMapRef:
+            {{- if .name }}
+            name: {{ .name }}
+            {{- else }}
+            name: {{ template "application.name" $ }}
+            {{- end }}
+        {{- end }}
+        {{- if (eq .type "secret") }}
+        - secretRef:
+            {{- if .name }}
+            name: {{ .name }}
+            {{- else }}
+            name: {{ template "application.name" $ }}
+            {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        ports:
+{{- include "helpers.list-deployment-ports" . | nindent 12 }}
+        {{- if .Values.deployment.env }}
+        env:
+{{ toYaml .Values.deployment.env | indent 10 }}
+        {{- end }}
+{{- if .Values.deployment.probes }}
+{{ toYaml .Values.deployment.probes | indent 8 }}
+{{- end }}
+      {{- if or (.Values.deployment.volumeMounts) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
+        volumeMounts:
+        {{- if (eq .Values.persistence.mountPVC true) }}
+        - mountPath: {{ .Values.persistence.mountPath }}
+          name: {{ template "application.name" . }}-data
+        {{- end }}
+        {{- if .Values.deployment.volumeMounts }}
+{{ toYaml .Values.deployment.volumeMounts | indent 8 }}
+        {{- end }}
+      {{- end }}
+{{- if .Values.deployment.resources }}
+        resources:
+{{ toYaml .Values.deployment.resources | indent 10 }}
+{{- end }}
+        {{- if .Values.deployment.additionalContainers }}
+{{ toYaml .Values.deployment.additionalContainers | indent 6 }}
+        {{- end }}
+        {{- if .Values.deployment.securityContext }}
+      securityContext:      
+{{ toYaml .Values.deployment.securityContext | indent 8 }}
+          {{- end }}
+      {{- if or (.Values.deployment.volumes) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
+      volumes:
+        {{- if (eq .Values.persistence.mountPVC true) }}
+      - name: {{ template "application.name" . }}-data
+        persistentVolumeClaim:
+          claimName: {{ template "application.name" . }}-data
+        {{- end }}
+        {{- if .Values.deployment.volumes }}
+{{ toYaml .Values.deployment.volumes | indent 6 }}
+        {{- end }}
+      {{- end }}  
+      {{- if .Values.rbac.serviceAccount.name }}
+      serviceAccountName: {{ .Values.rbac.serviceAccount.name }}
+        {{- else }}
+      serviceAccountName: {{ template "application.name" . }}
+      {{- end }}
+{{- end }}
