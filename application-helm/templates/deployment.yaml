@@ -91,9 +91,12 @@ spec:
         {{- end }}
         ports:
 {{- include "helpers.list-deployment-ports" . | nindent 12 }}
-        {{- if .Values.deployment.env }}
         env:
+        {{- if .Values.deployment.env }}
 {{ toYaml .Values.deployment.env | indent 10 }}
+        {{- end }}
+        {{- if .Values.externalSecret }}
+{{- include "helpers.list-externalSecret-variables" . | indent  10 }}
         {{- end }}
 {{- if .Values.deployment.probes }}
 {{ toYaml .Values.deployment.probes | indent 8 }}

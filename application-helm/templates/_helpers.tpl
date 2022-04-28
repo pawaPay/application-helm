@@ -23,6 +23,18 @@ helm.sh/release: {{ .Release.Name | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 {{- end -}}
 
+{{- define "helpers.list-externalSecret-variables"}}
+{{- range $key, $val := .Values.externalSecret }}
+    {{- range $env, $value := $val }}
+- name: {{ $env }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $key }}
+      key: {{ $value }}
+    {{- end}}
+{{- end}}
+{{- end}}
+
 {{- define "helpers.list-service-ports" -}}
 {{- range $ports := .Values.service.ports -}}
     {{- range $name, $port := $ports }}
