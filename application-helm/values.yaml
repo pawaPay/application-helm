@@ -1,6 +1,8 @@
 # Name of the application.
 applicationName: "application-helm"
 
+environment: "development"
+
 deployment:
 
   # By default deploymentStrategy is set to rollingUpdate
