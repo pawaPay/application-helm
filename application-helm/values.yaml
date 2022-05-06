@@ -1,74 +1,76 @@
-# Name of the application.
+# -- Name of the application.
 applicationName: "application-helm"
 
+# -- Environment for application
 environment: "development"
 
 deployment:
 
   # By default deploymentStrategy is set to rollingUpdate
   # You can change type to `Recreate` or can uncomment `rollingUpdate` specification and adjust them to your usage.
+  # -- The strategy used for update of pods 
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
       maxSurge: 1
   
-  # Select nodes to deploy which matches the following labels  
+  # -- Select nodes to deploy which matches the following labels  
   nodeSelector:
     # cloud.google.com/gke-nodepool: default-pool  
 
-  # If needed to setup host aliases
+  # -- Set DNS Alias for an IP
   hostAliases: 
   # - ip: "127.0.0.1"
   #   hostnames:
   #   - "foo.local"
   #   - "bar.local"
 
-  # Init containers which runs before the app container
+  # -- Init containers which runs before the app container
   initContainers:
   # - name: init-contaner
   #   image: busybox
   #   imagePullPolicy: IfNotPresent
   #   command: ['/bin/sh']    
 
-  # Additional labels for Deployment
+  # -- Additional labels for Deployment
   labels:
     # key: value
   
-  # Additional label added on pod which is used in Service's Label Selector
+  # -- Additional label added on pod which is used in Service's Label Selector
   podLabels: 
     # env: prod
 
-  # Annotations on deployments
+  # -- Annotations on deployments
   annotations:
 
-  # Additional Pod Annotations added on pod created by this Deployment
+  # -- Additional Pod Annotations created by this Deployment
   podAnnotations:
     # key: value
 
-  # Replicas to be created
+  # -- Number of Replicas
   replicas: 1
 
-  # Revision History Limit for Replica Sets
+  # -- Revision History Limit for Replica Sets
   revisionHistoryLimit: 4
 
-  # Secrets used to pull image
+  # -- Secrets used to pull image
   imagePullSecrets:
   # - name: quay-regcred
 
-  # If want to mount Envs from configmap or secret
+  # -- Mount Envs from configmap or secret
   envFrom: []
   # - type: configmap
   #   name: my-configmap
   # - type: secret
   #   name: my-secret
 
-  # Environment variables to be passed to the app container
+  # -- Environment variables to be passed to the app container
   env:
   # - name: ENVIRONMENT
   #   value: "dev"
   
-  # Volumes to be added to the pod
+  # -- Volumes to be added to the pod, check samples in values file
   volumes:
     # - name: config-volume
     #   configMap:        
@@ -85,19 +87,19 @@ deployment:
     #   persistentVolumeClaim:
     #     claimName: claim-name
 
-  # Mount path for Volumes 
+  # -- Mount path for Volumes, check samples in values file
   volumeMounts:
     # - mountPath: /path
     #   name: volume-name
 
-  # Taint tolerations for nodes
+  # -- Taint tolerations for nodes
   tolerations:
     # - key: "dedicated"
     #   operator: "Equal"
     #   value: "app"
     #   effect: "NoSchedule"
 
-  # Pod affinity and pod anti-affinity allow you to specify rules about how pods should be placed relative to other pods.
+  # -- Pod affinity and pod anti-affinity
   affinity:
   #  nodeAffinity:
   #    requiredDuringSchedulingIgnoredDuringExecution:
@@ -108,19 +110,19 @@ deployment:
   #          values:
   #          - ssd
 
-  # Image of the app container
+  # -- Image of the app container
   image: 
     repository: repository/image-name
     tag: v1.0.0
     pullPolicy: IfNotPresent
 
+  # -- Setting for Container Security Context
   containerSecurityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
-  # probes definitions
   probes:
     startupProbe:
       failureThreshold: 30
@@ -146,7 +148,7 @@ deployment:
         path: /actuator/health
         port: actuator
 
-  # Resources to be defined for pod
+  # -- Resources to be defined for pod
   resources: 
     # limits:
     #   memory: 512Mi
@@ -155,23 +157,22 @@ deployment:
     #   memory: 128Mi
     #   cpu: 0.2
 
-  # Add additional containers besides init and app containers
+  # -- Any additional containers besides init and app containers
   additionalContainers:
   # - name: sidecar-contaner
   #   image: busybox
   #   imagePullPolicy: IfNotPresent
   #   command: ['/bin/sh']
 
-  # Security Context for the pod
+  # -- Security Context for the pod
   securityContext:
     runAsNonRoot: true
     runAsUser: 10001
     runAsGroup: 3000
     fsGroup: 2000
     
-
-# Add Storage volumes to the pods
 persistence:
+# -- Add Storage volumes(PVCs) to the pods
   enabled: false
   mountPVC: false
   mountPath: "/"
@@ -190,67 +191,70 @@ persistence:
   #  "helm.sh/resource-policy": keep
   storageSize: 8Gi
 
-# Service object for servicing pods
+# Service object for exposing pods
 service:
-# Additional label added on Service
+# -- Additional label added on Service
   labels:
     # monitoring: "true"
+# -- Additional annotations added on Service
   annotations:
+# -- Type of Service
   type: ClusterIP
-  # add ports block to service & deployment, can add ports: 
-  # PORT_NAME: PORT_NUMBER
+  # -- add ports block to service & deployment, can add ports like PORT_NAME: PORT_NUMBER
   ports:
   - web: 8080
   - actuator: 8081
-  # ingress_port is used in Ingress & tests
+  # -- ingress_port is used in Ingress & tests
   ingress_port: 8080
 
-# Ingress object for exposing services
 ingresses:
+# -- Enable or Disable Ingress
   enabled: false
+  # -- List of Ingresses Manifests - nameSuffix is the suffix to add in name of Ingress, default name is $application-name
   manifests:
-  # nameSuffix is the suffix to add in name of Ingress, default name is application-name
-  - nameSuffix: ""
-    # List of host addresses to be exposed by this Ingress
-    hosts:
-      - host:  chart-example.local
-        paths:
-        - /path1
+  # - nameSuffix: ""
+  #   hosts:
+  #     - host:  chart-example.local
+  #       paths:
+  #       - /path1
     
-    # Add annotations to this Ingress
-    annotations:
-      # kubernetes.io/ingress.class: external-ingress
-      # ingress.kubernetes.io/rewrite-target: /
-      # ingress.kubernetes.io/force-ssl-redirect: true
+  #   # Additional annotations for Ingress
+  #   annotations:
+  #     # kubernetes.io/ingress.class: external-ingress
+  #     # ingress.kubernetes.io/rewrite-target: /
+  #     # ingress.kubernetes.io/force-ssl-redirect: true
 
-    # TLS details for this Ingress
-    tls:
-      # Secrets must be manually created in the namespace.
-      # - secretName: chart-example-tls
-      #   hosts:
-      #     - chart-example.local
+  #   # TLS details for Ingress
+  #   tls:
+  #     # Secrets must be manually created in the namespace.
+  #     # - secretName: chart-example-tls
+  #     #   hosts:
+  #     #     - chart-example.local
 
 # Role Based Access Control
 rbac:
+# -- Enable or Disable RBAC
   enabled: true
 
-  # Service Account to use by pods
+  # -- Service Account to use by pods
   serviceAccount:
     enabled: true
+    # -- Empty name is the default name i.e. $application-name
     name: ""
 
-    # Additional Labels on service account
+    # -- Additional Labels on service account
     labels:
       # key: value
     
-    # Annotations on service account 
+    # -- Annotations on service account 
     annotations:
       # key: value
 
+  # -- Bind any existing Role to service account 
   existingRoles: 
   # - name: springboot
 
-  # Create Roles (Namespaced)
+  # -- Create Roles (Namespaced) and bind to Service Account
   roles:
   # - name: configmaps
   #   rules:
@@ -269,9 +273,10 @@ rbac:
   #     verbs:
   #     - get
 
+# -- Bind any existing ClusterRole to service account 
   existingClusterroles: 
   # - name: springboot
-  # Create ClusterRoles (Clusterwide)
+  # -- Create ClusterRoles (Clusterwide) and bind to Service Account
   clusterroles:
   # - name: configmaps
   #   rules:
@@ -294,11 +299,15 @@ rbac:
 
 # Additional ConfigMaps  
 configMap:
+# -- Create new Configmap
   enabled: false
+  # -- Additional label for configmap
   labels: 
     # key: value
+  # -- Additional annotations for configmap
   annotations: 
     # key: value
+  # -- Create files as part of Configmap Data
   files:
   # - nameSuffix: code-config    
   #   data:
@@ -311,11 +320,15 @@ configMap:
 
 # Additional Secrets
 secret:
+# -- Create new secret
   enabled: false
+  # -- Additional label for secret
   labels: 
     # key: value
+  # -- Additional annotations for secret
   annotations: 
     # key: value
+  # -- Create files as part of Configmap Data
   files:
   # - nameSuffix: credentials
   #   data:
@@ -328,17 +341,17 @@ secret:
 
 # autoscaling is used for horizonal pod autoscaling
 autoscaling:
-# enabled is a boolean flag for enabling or disabling autoscaling 
+# -- Flag for enabling or disabling autoscaling 
   enabled: false
-# additional Labels on HPA
+# -- Additional Labels on HPA
   labels: 
     # key: value
-# annotations defines annotations in key value pair
+# -- Additional annotations in key value pair
   annotations: 
     # key: value
-# minReplicas sets the minimum number of replicas
+# -- minReplicas sets the minimum number of replicas
   minReplicas: 1
-# maxReplicas sets the maximum number of replicas
+# -- maxReplicas sets the maximum number of replicas
   maxReplicas: 10
 # metrics is the list of metrics used for hpa
   metrics:
