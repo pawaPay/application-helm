@@ -1,0 +1,34 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Release Charts
+
+on:
+  push:
+    branches:
+    - develop
+    paths:
+    - "application-helm/**"
+    - ".github/workflows/helm-release.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    # https://github.com/helm/chart-releaser-action/issues/13#issuecomment-602058369
+    - name: Fetch history
+      run: git fetch --prune --unshallow
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+        
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@v1.4.0
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      with: 
+        charts_repo_url: https://pawapay.github.io/application-helm/
+        charts_dir: "."
