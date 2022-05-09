@@ -157,6 +157,9 @@ deployment:
     #   memory: 128Mi
     #   cpu: 0.2
 
+  # -- Termination Grace Period in Seconds for Pods
+  terminationGracePeriodSeconds: 30
+
   # -- Any additional containers besides init and app containers
   additionalContainers:
   # - name: sidecar-contaner

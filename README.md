@@ -51,6 +51,7 @@ A generic helm chart for all sort of applications
 | deployment.replicas | int | `1` | Number of Replicas |
 | deployment.resources | string | `nil` | Resources to be defined for pod |
 | deployment.revisionHistoryLimit | int | `4` | Revision History Limit for Replica Sets |
+| deployment.terminationGracePeriodSeconds | int | 30 | Termination Grace Period in Seconds for Pods |
 | deployment.securityContext | object | `{"fsGroup":2000,"runAsGroup":3000,"runAsNonRoot":true,"runAsUser":10001}` | Security Context for the pod |
 | deployment.strategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | The strategy used for update of pods  |
 | deployment.tolerations | string | `nil` | Taint tolerations for nodes |
