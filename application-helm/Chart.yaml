@@ -1,7 +1,7 @@
 apiVersion: v2
 name: application-helm
 description: A generic helm chart for all sort of applications
-version: 0.0.2
+version: 0.0.3
 home: "https://github.com/pawapay/application-helm"
 engine: gotpl
 type: application

@@ -118,6 +118,9 @@ spec:
         {{- if .Values.deployment.additionalContainers }}
 {{ toYaml .Values.deployment.additionalContainers | indent 6 }}
         {{- end }}
+        {{- if .Values.deployment.terminationGracePeriodSeconds }}
+        terminationGracePeriodSeconds: {{.Values.deployment.terminationGracePeriodSeconds}}
+        {{- end }}
         {{- if .Values.deployment.securityContext }}
       securityContext:      
 {{ toYaml .Values.deployment.securityContext | indent 8 }}

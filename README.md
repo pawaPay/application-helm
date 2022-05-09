@@ -1,6 +1,6 @@
 # application-helm
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A generic helm chart for all sort of applications
 
@@ -51,6 +51,7 @@ A generic helm chart for all sort of applications
 | deployment.replicas | int | `1` | Number of Replicas |
 | deployment.resources | string | `nil` | Resources to be defined for pod |
 | deployment.revisionHistoryLimit | int | `4` | Revision History Limit for Replica Sets |
+| deployment.terminationGracePeriodSeconds | int | 30 | Termination Grace Period in Seconds for Pods |
 | deployment.securityContext | object | `{"fsGroup":2000,"runAsGroup":3000,"runAsNonRoot":true,"runAsUser":10001}` | Security Context for the pod |
 | deployment.strategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | The strategy used for update of pods  |
 | deployment.tolerations | string | `nil` | Taint tolerations for nodes |
