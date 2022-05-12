@@ -85,9 +85,10 @@ A generic helm chart for all sort of applications
 | rbac.existingRoles | string | `nil` | Bind any existing Role to service account  |
 | rbac.roles | string | `nil` | Create Roles (Namespaced) and bind to Service Account |
 | rbac.serviceAccount | object | `{"annotations":null,"enabled":true,"labels":null,"name":""}` | Service Account to use by pods |
+| rbac.serviceAccount.enabled | bool | `true` | Whether to create Service Account  |
 | rbac.serviceAccount.annotations | string | `nil` | Annotations on service account  |
 | rbac.serviceAccount.labels | string | `nil` | Additional Labels on service account |
-| rbac.serviceAccount.name | string | `""` | Empty name is the default name i.e. $application-name |
+| rbac.serviceAccount.name | string | `""` | Name of the Service Account to be mounted on Pod, Empty name is the default name i.e. $application-name |
 
 ### Configmap
 

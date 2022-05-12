@@ -241,8 +241,11 @@ rbac:
 
   # -- Service Account to use by pods
   serviceAccount:
+    # -- Whether to create Service Account
     enabled: true
     # -- Empty name is the default name i.e. $application-name
+    # Name of Service Account to be Created and mounted to Pod, 
+    # if enabled = "false", and name is set, it will mount existing Service Account on Pod
     name: ""
 
     # -- Additional Labels on service account
