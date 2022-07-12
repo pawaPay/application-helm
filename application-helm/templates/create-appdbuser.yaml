@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: createdb-
+  #name: createdb
+  namespace: db
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      containers:
+      - name: createdb
+        image: mysql:8.0.29-debian
+        command:
+          - sh
+          - -c
+          - >
+            while ! mysqladmin ping -h {{ .Values.persistance.mysql.host }} --silent; do sleep 1; done;
+            echo "${SQLCOMMAND}" | mysql --user ${SPRING_LIQUIBASE_USER} --host {{ .Values.persistance.mysql.host }} --port {{ .Values.persistance.mysql.port }} --password=${SPRING_LIQUIBASE_PASSWORD};
+        env:
+        {{- if .Values.externalSecret }}
+{{- include "helpers.list-externalSecret-variables" . | indent  10 }}
+        {{- end }}
+        - name: SQLCOMMAND
+          value: |
+            CREATE USER IF NOT EXISTS CREATE USER "${SPRING_DATASOURCE_USERNAME}"@"%" IDENTIFIED BY "${SPRING_DATASOURCE_PASSWORD}";
+            GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE ON {{ .Values.persistance.mysql.db_name }}.* TO "${SPRING_DATASOURCE_USERNAME}"@"%";
+            #CREATE USER IF NOT EXISTS "delete_me"@"%" IDENTIFIED BY "delete_me";
+            #GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE ON test.* TO "delete_me"@"%";
+      restartPolicy: Never
