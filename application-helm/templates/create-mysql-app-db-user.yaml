@@ -20,7 +20,6 @@ spec:
           - -c
           - >
             echo "DB config parameters:";
-            echo "----------------------"
             export DB_PROTO="$(cut -d':' -f2 <<<"${SPRING_DATASOURCE_URL}")";
             echo "DB Protocol: ${DB_PROTO}";
             TEMP_HOST="$(cut -d':' -f3 <<<"${SPRING_DATASOURCE_URL}")";
@@ -66,6 +65,7 @@ spec:
               name: {{ template "application.name" $ }}-env-vars
               key: SPRING_DATASOURCE_URL
       restartPolicy: Never
+  backoffLimit: 2
 ---
 apiVersion: 'kubernetes-client.io/v1'
 kind: ExternalSecret
