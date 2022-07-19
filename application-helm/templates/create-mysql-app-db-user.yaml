@@ -43,12 +43,12 @@ spec:
         - name: USER_CREATION_USERNAME
           valueFrom:
             secretKeyRef:
-              name: app-user-creation
+              name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation
               key: USER_CREATION_USERNAME
         - name: USER_CREATION_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-user-creation
+              name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation
               key: USER_CREATION_PASSWORD
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
@@ -70,14 +70,14 @@ spec:
 apiVersion: 'kubernetes-client.io/v1'
 kind: ExternalSecret
 metadata:
-  name: {{ template "application.name" $ }}-app-db-user-creation
+  name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation
 spec:
   backendType: secretsManager
   data:
-    - key: app-db-user-creation
+    - key: {{ .Values.environment }}-app-db-user-creation
       name: USER_CREATION_USERNAME
       property: USER_CREATION_USERNAME
-    - key: app-db-user-creation
+    - key: {{ .Values.environment }}-app-db-user-creation
       name: USER_CREATION_PASSWORD
       property: USER_CREATION_PASSWORD
 {{- end -}}
