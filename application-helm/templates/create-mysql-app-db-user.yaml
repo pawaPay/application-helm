@@ -3,8 +3,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  #generateName: createdb-
-  name: createdb
+  generateName: createdb-
+  #name: createdb
   annotations:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
