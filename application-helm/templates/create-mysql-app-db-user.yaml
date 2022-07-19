@@ -1,9 +1,9 @@
-{{- if .Values.application.persistance -}}
-{{- if .Values.application.persistance.mysql.auto_db_user_create -}}
+{{- if .Values.initdb -}}
+{{- if .Values.initdb.mysql.auto_db_user_create -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: createdb-
+  generateName: {{ template "application.name" $ }}-app-db-user-creation-
   #name: createdb
   annotations:
     argocd.argoproj.io/hook: PreSync
@@ -53,31 +53,31 @@ spec:
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.application.environment }}-{{ .Values.application.applicationName }}-rds-credentials
+              name: {{ .Values.environment }}-{{ template "application.name" $ }}-rds-credentials
               key: DATASOURCE_USERNAME
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.application.environment }}-{{ .Values.application.applicationName }}-rds-credentials
+              name: {{ .Values.environment }}-{{ template "application.name" $ }}-rds-credentials
               key: DATASOURCE_PASSWORD
         - name: SPRING_DATASOURCE_URL
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.application.applicationName }}-env-vars
+              name: {{ template "application.name" $ }}-env-vars
               key: SPRING_DATASOURCE_URL
       restartPolicy: Never
 ---
 apiVersion: 'kubernetes-client.io/v1'
 kind: ExternalSecret
 metadata:
-  name: app-user-creation
+  name: {{ template "application.name" $ }}-app-db-user-creation
 spec:
   backendType: secretsManager
   data:
-    - key: app-user-creation
+    - key: app-db-user-creation
       name: USER_CREATION_USERNAME
       property: USER_CREATION_USERNAME
-    - key: app-user-creation
+    - key: app-db-user-creation
       name: USER_CREATION_PASSWORD
       property: USER_CREATION_PASSWORD
 {{- end -}}
