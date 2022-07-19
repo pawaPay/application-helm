@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation-
+  generateName: {{ template "application.name" $ }}-app-db-user-create-
   #name: createdb
   annotations:
     argocd.argoproj.io/hook: PreSync
@@ -70,7 +70,7 @@ spec:
 apiVersion: 'kubernetes-client.io/v1'
 kind: ExternalSecret
 metadata:
-  name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation
+  name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
 spec:
   backendType: secretsManager
   data:
