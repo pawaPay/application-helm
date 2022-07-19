@@ -1,0 +1,84 @@
+{{- if .Values.application.persistance -}}
+{{- if .Values.application.persistance.mysql.auto_db_user_create -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  #generateName: createdb-
+  name: createdb
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      containers:
+      - name: createdb
+        image: mysql:8.0.29-debian
+        command:
+          - bash
+          - -c
+          - >
+            echo "DB config parameters:";
+            echo "----------------------"
+            export DB_PROTO="$(cut -d':' -f2 <<<"${SPRING_DATASOURCE_URL}")";
+            echo "DB Protocol: ${DB_PROTO}";
+            TEMP_HOST="$(cut -d':' -f3 <<<"${SPRING_DATASOURCE_URL}")";
+            export HOST="$(cut -d'/' -f3 <<<"${TEMP_HOST}")";
+            echo "DB Host: ${HOST}";
+            TEMP_PORT="$(cut -d':' -f4 <<<"${SPRING_DATASOURCE_URL}")";
+            export PORT="$(cut -d'/' -f1 <<<"${TEMP_PORT}")";
+            echo "DB Port: ${PORT}";
+            TEMP_DB="$(cut -d'/' -f2 <<<"${TEMP_PORT}")";
+            export DB="$(cut -d'?' -f1 <<<"${TEMP_DB}")";
+            echo "DB: ${DB}";
+            echo "Checking if DB is up";
+            while ! mysqladmin ping -h ${HOST} --silent; do sleep 1; done;
+            export SQLCOMMAND="
+            CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';
+            GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
+            echo "Executing DB user creation";
+            echo "${SQLCOMMAND}" | mysql --user ${USER_CREATION_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATION_PASSWORD};
+        env:
+        - name: USER_CREATION_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: app-user-creation
+              key: USER_CREATION_USERNAME
+        - name: USER_CREATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-user-creation
+              key: USER_CREATION_PASSWORD
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.application.environment }}-{{ .Values.application.applicationName }}-rds-credentials
+              key: DATASOURCE_USERNAME
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.application.environment }}-{{ .Values.application.applicationName }}-rds-credentials
+              key: DATASOURCE_PASSWORD
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.application.applicationName }}-env-vars
+              key: SPRING_DATASOURCE_URL
+      restartPolicy: Never
+---
+apiVersion: 'kubernetes-client.io/v1'
+kind: ExternalSecret
+metadata:
+  name: app-user-creation
+spec:
+  backendType: secretsManager
+  data:
+    - key: app-user-creation
+      name: USER_CREATION_USERNAME
+      property: USER_CREATION_USERNAME
+    - key: app-user-creation
+      name: USER_CREATION_PASSWORD
+      property: USER_CREATION_PASSWORD
+{{- end -}}
+{{- end -}}
