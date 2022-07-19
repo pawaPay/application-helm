@@ -37,19 +37,19 @@ spec:
             export SQLCOMMAND="
             CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';
             GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
-            echo "Executing DB user creation";
-            echo "${SQLCOMMAND}" | mysql --user ${USER_CREATION_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATION_PASSWORD};
+            echo "Executing DB user create";
+            echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_USERNAME};
         env:
-        - name: USER_CREATION_USERNAME
+        - name: USER_CREATE_USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation
-              key: USER_CREATION_USERNAME
-        - name: USER_CREATION_PASSWORD
+              name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
+              key: USER_CREATE_USERNAME
+        - name: USER_CREATE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-creation
-              key: USER_CREATION_PASSWORD
+              name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
+              key: USER_CREATE_PASSWORD
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
@@ -74,11 +74,11 @@ metadata:
 spec:
   backendType: secretsManager
   data:
-    - key: {{ .Values.environment }}-app-db-user-creation
-      name: USER_CREATION_USERNAME
-      property: USER_CREATION_USERNAME
-    - key: {{ .Values.environment }}-app-db-user-creation
-      name: USER_CREATION_PASSWORD
-      property: USER_CREATION_PASSWORD
+    - key: {{ .Values.environment }}-app-db-user-create
+      name: USER_CREATE_USERNAME
+      property: USER_CREATE_USERNAME
+    - key: {{ .Values.environment }}-app-db-user-create
+      name: USER_CREATE_PASSWORD
+      property: USER_CREATE_PASSWORD
 {{- end -}}
 {{- end -}}
