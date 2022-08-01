@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: {{ template "application.name" $ }}-app-db-user-create-
+  name: {{ template "application.name" $ }}-db-user-creation
   #name: createdb
   annotations:
     argocd.argoproj.io/hook: PreSync
