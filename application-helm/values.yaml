@@ -4,6 +4,22 @@ applicationName: "application-helm"
 # -- Environment for application
 environment: "development"
 
+# -- Rollouts are alternate to Kubernetes Deployments, only strategy is different, all other fields are same
+rollout:
+  enabled: false
+  # Other values are same as deployment, so can see Deployment resources
+  strategy: "blueGreen"
+  autoPromotionEnabled: true
+  # this is defined if strategy is canary
+  steps:
+  - setWeight: 20
+  # The following pause step will pause the rollout indefinitely until manually resumed.
+  # Rollouts can be manually resumed by running `kubectl argo rollouts promote ROLLOUT`
+  - pause: {duration: 60s}
+  - setWeight: 80
+  - pause: {duration: 20s}
+
+
 deployment:
 
   # By default deploymentStrategy is set to rollingUpdate
