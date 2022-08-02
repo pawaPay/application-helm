@@ -17,8 +17,15 @@ metadata:
   name: {{ template "application.name" . }}
 spec:
   strategy:
-  {{- if .Values.rollout.strategy }}
-{{ toYaml .Values.rollout.strategy | indent 4 }}
+  {{- if eq .Values.rollout.strategy "blueGreen" }}
+    blueGreen: 
+      activeService: {{ template "application.name" . }}
+      previewService: {{ template "application.name" . }}-preview
+      autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
+  {{- else }}
+    canary:
+      steps:
+{{ toYaml .Values.rollout.steps | indent 8 }}
   {{- end }}
   replicas: {{ .Values.rollout.replicas }}
   revisionHistoryLimit: {{ .Values.rollout.revisionHistoryLimit }}
