@@ -1,0 +1,148 @@
+{{- if .Values.rollout }}
+{{- if .Values.rollout.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  labels:
+{{ include "application.labels" . | indent 4 }}
+{{ include "application.labels.chart" . | indent 4 }}
+    app.kubernetes.io/appVersion: "{{ .Values.rollout.image.tag }}"
+{{- if .Values.rollout.labels }}
+{{ toYaml .Values.rollout.labels | indent 4 }}
+{{- end }}
+{{- if .Values.rollout.annotations }}
+  annotations:
+{{ toYaml .Values.rollout.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "application.name" . }}
+spec:
+  strategy:
+  {{- if .Values.rollout.strategy }}
+{{ toYaml .Values.rollout.strategy | indent 4 }}
+  {{- end }}
+  replicas: {{ .Values.rollout.replicas }}
+  revisionHistoryLimit: {{ .Values.rollout.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+{{ include "application.labels.selector" . | indent 6 }}
+  template:
+    metadata:
+      annotations:
+{{- if .Values.rollout.podAnnotations }}
+{{ toYaml .Values.rollout.podAnnotations | indent 8 }}
+{{- end }}
+      labels:
+{{ include "application.labels.selector" . | indent 8 }}
+{{- if .Values.rollout.podLabels }}
+{{ toYaml .Values.rollout.podLabels | indent 8 }}
+{{- end }}
+    spec:
+      {{- if .Values.rollout.hostAliases }}
+      hostAliases:
+{{ toYaml .Values.rollout.hostAliases | indent 6 }}
+      {{- end }}
+      {{- if .Values.rollout.initContainers }}
+      initContainers:
+{{ toYaml .Values.rollout.initContainers | indent 6 }}
+      {{- end }}
+      {{- if .Values.rollout.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.rollout.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.rollout.tolerations }}
+      tolerations:
+{{ toYaml .Values.rollout.tolerations | indent 8 -}}
+      {{- end }}
+      {{- if .Values.rollout.affinity }}
+      affinity:
+      {{ toYaml .Values.rollout.affinity | indent 8 -}}
+      {{- end }}
+      {{- with .Values.rollout.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ template "application.name" . }}
+        image: "{{ .Values.rollout.image.repository }}:{{ .Values.rollout.image.tag }}"
+        imagePullPolicy: {{ .Values.rollout.image.pullPolicy }}
+        {{- if .Values.rollout.containerSecurityContext }}
+        securityContext:      
+{{ toYaml .Values.rollout.containerSecurityContext | indent 10 }}
+          {{- end }}
+        {{- if .Values.rollout.envFrom }}
+        envFrom:
+        {{- range .Values.rollout.envFrom }}
+        {{- if (eq .type "configmap") }}
+        - configMapRef:
+            {{- if .name }}
+            name: {{ .name }}
+            {{- else }}
+            name: {{ template "application.name" $ }}
+            {{- end }}
+        {{- end }}
+        {{- if (eq .type "secret") }}
+        - secretRef:
+            {{- if .name }}
+            name: {{ .name }}
+            {{- else }}
+            name: {{ template "application.name" $ }}
+            {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        ports:
+{{- include "helpers.list-deployment-ports" . | nindent 12 }}
+        env:
+        {{- if .Values.rollout.env }}
+{{ toYaml .Values.rollout.env | indent 10 }}
+        {{- end }}
+        {{- if .Values.externalSecret }}
+{{- include "helpers.list-externalSecret-variables" . | indent  10 }}
+        {{- end }}
+{{- if .Values.rollout.probes }}
+{{ toYaml .Values.rollout.probes | indent 8 }}
+{{- end }}
+      {{- if or (.Values.rollout.volumeMounts) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
+        volumeMounts:
+        {{- if (eq .Values.persistence.mountPVC true) }}
+        - mountPath: {{ .Values.persistence.mountPath }}
+          name: {{ template "application.name" . }}-data
+        {{- end }}
+        {{- if .Values.rollout.volumeMounts }}
+{{ toYaml .Values.rollout.volumeMounts | indent 8 }}
+        {{- end }}
+      {{- end }}
+{{- if .Values.rollout.resources }}
+        resources:
+{{ toYaml .Values.rollout.resources | indent 10 }}
+{{- end }}
+        {{- if .Values.rollout.additionalContainers }}
+{{ toYaml .Values.rollout.additionalContainers | indent 6 }}
+        {{- end }}
+      {{- if .Values.rollout.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{.Values.rollout.terminationGracePeriodSeconds}}
+      {{- end }}
+        {{- if .Values.rollout.securityContext }}
+      securityContext:      
+{{ toYaml .Values.rollout.securityContext | indent 8 }}
+          {{- end }}
+      {{- if or (.Values.rollout.volumes) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
+      volumes:
+        {{- if (eq .Values.persistence.mountPVC true) }}
+      - name: {{ template "application.name" . }}-data
+        persistentVolumeClaim:
+          claimName: {{ template "application.name" . }}-data
+        {{- end }}
+        {{- if .Values.rollout.volumes }}
+{{ toYaml .Values.rollout.volumes | indent 6 }}
+        {{- end }}
+      {{- end }}  
+      {{- if .Values.rbac.serviceAccount.name }}
+      serviceAccountName: {{ .Values.rbac.serviceAccount.name }}
+        {{- else }}
+          {{- if and .Values.rbac.enabled .Values.rbac.serviceAccount.enabled }}
+      serviceAccountName: {{ template "application.name" . }}
+          {{- end }}
+      {{- end }}
+{{- end }}
+{{- end }}

@@ -15,8 +15,14 @@ metadata:
   name: {{ template "application.name" . }}
 spec:
   type: {{ .Values.service.type }}
-{{- if .Values.deployment.podLabels }}
+{{- if .Values.deployment.enabled }}
+  {{- if .Values.deployment.podLabels }}
 {{ toYaml .Values.deployment.podLabels | indent 4 }}
+  {{- end }}
+{{- else }}
+  {{- if .Values.rollout.podLabels }}
+{{ toYaml .Values.rollout.podLabels | indent 4 }}
+  {{- end }}
 {{- end }}
   ports:
 {{- include "helpers.list-service-ports" . | nindent 4 }}
