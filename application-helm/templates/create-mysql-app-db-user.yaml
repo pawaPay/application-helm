@@ -13,7 +13,7 @@ spec:
   template:
     spec:
       containers:
-      - name: createdb
+      - name: {{ template "application.name" $ }}-db-user-creation
         image: mysql:8.0.29-debian
         command:
           - bash
