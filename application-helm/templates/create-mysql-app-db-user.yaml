@@ -4,7 +4,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "application.name" $ }}-db-user-creation
-  #name: createdb
   annotations:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
@@ -71,6 +70,9 @@ apiVersion: 'kubernetes-client.io/v1'
 kind: ExternalSecret
 metadata:
   name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   backendType: secretsManager
   data:
