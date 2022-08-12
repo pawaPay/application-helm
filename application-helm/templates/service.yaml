@@ -30,6 +30,7 @@ spec:
 {{ include "application.labels.selector" . | indent 4 }}
 {{- end }}
 ---
+{{- if .Values.rollout.enabled }}
 {{- if eq .Values.rollout.strategy "blueGreen" }}
 apiVersion: v1
 kind: Service
@@ -60,4 +61,5 @@ spec:
 {{- include "helpers.list-service-ports" . | nindent 4 }}
   selector:
 {{ include "application.labels.selector" . | indent 4 }}
+{{- end }}
 {{- end }}

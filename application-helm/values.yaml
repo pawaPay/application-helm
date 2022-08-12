@@ -21,7 +21,7 @@ rollout:
 
 
 deployment:
-
+  enabled: true
   # By default deploymentStrategy is set to rollingUpdate
   # You can change type to `Recreate` or can uncomment `rollingUpdate` specification and adjust them to your usage.
   # -- The strategy used for update of pods 
