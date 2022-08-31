@@ -1,12 +1,14 @@
 # application-helm
 
-![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 A generic helm chart for all sort of applications
 
 **Homepage:** <https://github.com/pawapay/application-helm>
 
 ## Values
+
+The updated values can be seen under `application-helm/values.yaml` and you can update accordingly.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
