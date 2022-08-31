@@ -32,11 +32,14 @@ spec:
             echo "DB: ${DB}";
             echo "Checking if DB is up";
             while ! mysqladmin ping -h ${HOST} --silent; do sleep 1; done;
-            export SQLCOMMAND="
-            CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';
-            GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
-            echo "Executing DB user create";
-            echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+              export SQLUSERCREATECOMMAND="CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';";
+              echo "Executing DB user create";
+              echo "${SQLUSERCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+              sleep 2;
+              export SQLCOMMAND="GRANT ${SQL_PERMISSIONS} ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
+              echo "The Grant Permissions Command to execute is: ${SQLCOMMAND}"
+              echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+              sleep 2;
         env:
         - name: USER_CREATE_USERNAME
           valueFrom:
@@ -63,6 +66,8 @@ spec:
             configMapKeyRef:
               name: {{ template "application.name" $ }}-env-vars
               key: SPRING_DATASOURCE_URL
+        - name: SQL_PERMISSIONS
+          value: {{ .Values.initdb.mysql.permissions }}
       restartPolicy: Never
   backoffLimit: 2
 ---
