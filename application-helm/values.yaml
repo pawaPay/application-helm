@@ -319,6 +319,11 @@ rbac:
   #     - list
   #     - watch
 
+initdb:
+  mysql:
+    auto_db_user_create: false
+    permissions: "SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE"
+
 # Additional ConfigMaps  
 configMap:
 # -- Create new Configmap
