@@ -322,7 +322,7 @@ rbac:
 initdb:
   mysql:
     auto_db_user_create: false
-    permissions: "CREATE, INDEX, SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE"
+    permissions: "CREATE, INDEX, SELECT, INSERT, UPDATE, DELETE, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE"
 
 # Additional ConfigMaps  
 configMap:
