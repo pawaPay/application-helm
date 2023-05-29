@@ -37,6 +37,9 @@ spec:
 {{ toYaml .Values.deployment.podLabels | indent 8 }}
 {{- end }}
     spec:
+      {{- if .Values.deployment.shareProcessNamespace.enabled }}
+      shareProcessNamespace: true
+      {{- end }}
       {{- if .Values.deployment.hostAliases }}
       hostAliases:
 {{ toYaml .Values.deployment.hostAliases | indent 6 }}

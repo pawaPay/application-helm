@@ -64,6 +64,9 @@ deployment:
   podAnnotations:
     # key: value
 
+  shareProcessNamespace:
+    enabled: false
+
   # -- Number of Replicas
   replicas: 1
 
