@@ -64,6 +64,7 @@ deployment:
   podAnnotations:
     # key: value
 
+  # -- Enable share process namespace for a pod
   shareProcessNamespace:
     enabled: false
 
