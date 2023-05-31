@@ -64,7 +64,7 @@ deployment:
   podAnnotations:
     # key: value
 
-  # -- Enable it if you have zombie processes issue inside a pod
+  # -- Enable share process namespace for a pod
   shareProcessNamespace:
     enabled: false
 
