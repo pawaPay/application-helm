@@ -32,6 +32,10 @@ spec:
             echo "DB: ${DB}";
             echo "Checking if DB is up";
             while ! mysqladmin ping -h ${HOST} -P ${PORT} --silent; do sleep 1; done;
+              export SQLDBCREATECOMMAND="CREATE DATABASE IF NOT EXISTS ${DB};";
+              echo "Executing DB create";
+              echo "${SQLDBCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+              sleep 2;
               export SQLUSERCREATECOMMAND="CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';";
               echo "Executing DB user create";
               echo "${SQLUSERCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
