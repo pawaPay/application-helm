@@ -32,7 +32,7 @@ spec:
             echo "DB: ${DB}";
             echo "Checking if DB is up";
             while ! mysqladmin ping -h ${HOST} -P ${PORT} --silent; do sleep 1; done;
-              export SQLDBCREATECOMMAND="CREATE DATABASE IF NOT EXISTS ${DB};";
+              export SQLDBCREATECOMMAND="CREATE DATABASE IF NOT EXISTS ${DB} CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;";
               echo "Executing DB create";
               echo "${SQLDBCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
               sleep 2;
