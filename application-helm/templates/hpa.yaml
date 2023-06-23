@@ -1,6 +1,6 @@
 {{- if .Values.autoscaling }}
 {{- if and .Values.autoscaling.enabled .Values.deployment }}
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "application.name" . }}
