@@ -324,9 +324,27 @@ rbac:
   #     - watch
 
 initdb:
+  # -- Annotations on create-mysql-user job
+  annotations:
+    # key: value
+  secret:
+    # -- Annotations on create-mysql-user ExternalSecret
+    annotations:
+      # key: value
   mysql:
     auto_db_user_create: false
     permissions: "CREATE, INDEX, SELECT, INSERT, UPDATE, DELETE, ALTER, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE"
+
+sync_secrets:
+  enabled: true
+  # -- Annotations on sync-secrets job
+  annotations:
+    # key: value
+
+external_secrets:
+  # -- Annotations on externalSecrets
+  annotations:
+    # key: value
 
 # Additional ConfigMaps  
 configMap:

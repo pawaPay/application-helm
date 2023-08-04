@@ -4,9 +4,10 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "application.name" $ }}-db-user-creation
+  {{- if .Values.initdb.annotations }}
   annotations:
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+{{ toYaml .Values.initdb.annotations | indent 4 }}
+  {{- end }}
 spec:
   ttlSecondsAfterFinished: 120
   template:
@@ -79,9 +80,10 @@ apiVersion: 'kubernetes-client.io/v1'
 kind: ExternalSecret
 metadata:
   name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
+  {{- if .Values.initdb.secret.annotations }}
   annotations:
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+{{ toYaml .Values.initdb.secret.annotations | indent 4 }}
+  {{- end }}
 spec:
   backendType: secretsManager
   data:
