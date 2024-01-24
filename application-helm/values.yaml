@@ -237,10 +237,15 @@ ingresses:
   manifests:
   # - nameSuffix: ""
   #   hosts:
+  #     # this host will use the ingress_port defined at service level
   #     - host:  chart-example.local
   #       paths:
   #       - /path1
-    
+  #     # this host will use custom port 8081
+  #     - host:  chart-example.local
+  #       paths:
+  #       - /path2
+  #       port: 8081
   #   # Additional annotations for Ingress
   #   annotations:
   #     # kubernetes.io/ingress.class: external-ingress
