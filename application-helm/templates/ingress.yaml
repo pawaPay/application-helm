@@ -26,6 +26,7 @@ spec:
     - host: {{ .host }}
       http:
         paths:
+          {{- $port := .port }}
           {{- range .paths }}
           - path: {{ . }}
             pathType: ImplementationSpecific
@@ -33,7 +34,11 @@ spec:
               service:
                 name: {{ template "application.name" $ }}
                 port:
+                {{- if $port }}
+                  number: {{ $port }}
+                {{- else }}
                   number: {{ $servicePort }}
+                {{- end }}
           {{- end }}
     {{- end -}}
   {{- if .tls }}

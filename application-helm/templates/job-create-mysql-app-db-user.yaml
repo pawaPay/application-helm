@@ -44,7 +44,7 @@ spec:
               export SQLCOMMAND="GRANT ${SQL_PERMISSIONS} ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
               echo "The Grant Permissions Command to execute is: ${SQLCOMMAND}"
               echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
-              sleep 2;
+              sleep 4;
         env:
         - name: USER_CREATE_USERNAME
           valueFrom:
