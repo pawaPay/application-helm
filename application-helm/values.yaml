@@ -350,6 +350,9 @@ external_secrets:
   # -- Annotations on externalSecrets
   annotations:
     # key: value
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: external-secrets
 
 # Additional ConfigMaps  
 configMap:
