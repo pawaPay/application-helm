@@ -346,7 +346,11 @@ sync_secrets:
   annotations:
     # key: value
   image:
-    tag: 2024_4_18_test
+    repo: 768383028426.dkr.ecr.eu-central-1.amazonaws.com/pawapay-sync-secrets
+    tag: "2024_4_18"
+
+  envFrom:
+    name: github-creds
 
 external_secrets:
   # -- Annotations on externalSecrets
