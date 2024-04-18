@@ -345,6 +345,8 @@ sync_secrets:
   # -- Annotations on sync-secrets job
   annotations:
     # key: value
+  image:
+    tag: 2024_4_18_test
 
 external_secrets:
   # -- Annotations on externalSecrets
