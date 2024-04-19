@@ -346,10 +346,10 @@ sync_secrets:
   annotations:
     # key: value
   image:
-    repo: 768383028426.dkr.ecr.eu-central-1.amazonaws.com/pawapay-sync-secrets
-    tag: "2024_4_18"
-
+    repository: <replace-with-registry-arn>/pawapay-sync-secrts
+    tag: 2024-4-18-python3.7
   envFrom:
+  - type: secret
     name: github-creds
 
 external_secrets:
