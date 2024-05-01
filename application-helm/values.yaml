@@ -345,6 +345,10 @@ sync_secrets:
   # -- Annotations on sync-secrets job
   annotations:
     # key: value
+  image:
+    repository: docker.io/organization/repo
+    tag: 2024-4-18-python3.7
+  envFrom: []
 
 external_secrets:
   # -- Annotations on externalSecrets
