@@ -266,8 +266,8 @@ endpointMonitor:
   # urlFrom:
   #   ingressRef:
   #     name: application-helm
-  # uptimeRobotConfig:
-  #   interval: 60
+  uptimeRobotConfig:
+    interval: 60
 
 # Role Based Access Control
 rbac:
