@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   application-helm:
   - apiVersion: v2
+    created: "2024-05-22T11:08:31.534585021Z"
+    description: A generic helm chart for all sort of applications
+    digest: cdff1f20a34a2d3a3751db78987507553766003c11eb56f2c72dbd4255aed5b2
+    home: https://github.com/pawapay/application-helm
+    name: application-helm
+    type: application
+    urls:
+    - https://github.com/pawaPay/application-helm/releases/download/application-helm-0.0.12/application-helm-0.0.12.tgz
+    version: 0.0.12
+  - apiVersion: v2
     created: "2024-03-06T14:34:55.415546485Z"
     description: A generic helm chart for all sort of applications
     digest: 4754071a8348f588581641b891dc764d0964c108079926847292f8f773883a61
@@ -109,4 +119,4 @@ entries:
     urls:
     - https://github.com/pawaPay/application-helm/releases/download/application-helm-0.0.1/application-helm-0.0.1.tgz
     version: 0.0.1
-generated: "2024-03-06T14:34:55.41565136Z"
+generated: "2024-05-22T11:08:31.534643842Z"
