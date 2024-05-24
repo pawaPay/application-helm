@@ -259,6 +259,16 @@ ingresses:
   #     #   hosts:
   #     #     - chart-example.local
 
+# Endpoint Monitor for Uptime Monitoring
+endpointMonitor:
+  enabled: false
+  # url: https://abc.com
+  # urlFrom:
+  #   ingressRef:
+  #     name: application-helm
+  uptimeRobotConfig:
+    interval: 60
+
 # Role Based Access Control
 rbac:
 # -- Enable or Disable RBAC

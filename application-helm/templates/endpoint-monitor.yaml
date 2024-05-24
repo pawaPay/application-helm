@@ -1,0 +1,30 @@
+{{- if .Values.endpointMonitor }}
+{{- if .Values.endpointMonitor.enabled }}
+apiVersion: endpointmonitor.stakater.com/v1alpha1
+kind: EndpointMonitor
+metadata:
+  name: {{ template "application.name" . }}-{{ .Values.environment }}
+  labels:
+    {{ include "application.labels" . | nindent 4 }}
+    {{ include "application.labels.chart" . | nindent 4 }}
+  {{- if .Values.endpointMonitor.labels }}
+    {{- toYaml .Values.endpointMonitor.labels | nindent 4 }}
+  {{- end }}
+  {{- if .Values.endpointMonitor.annotations }}
+  annotations:
+    {{- toYaml .Values.endpointMonitor.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  forceHttps: true
+  {{- if .Values.endpointMonitor.url }}
+  url: {{ .Values.endpointMonitor.url }}
+  {{- else if .Values.endpointMonitor.urlFrom }}
+  urlFrom:
+{{- toYaml .Values.endpointMonitor.urlFrom | nindent 4 }}
+  {{- end }}
+  {{- if .Values.endpointMonitor.uptimeRobotConfig }}
+  uptimeRobotConfig:
+{{- toYaml .Values.endpointMonitor.uptimeRobotConfig | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
