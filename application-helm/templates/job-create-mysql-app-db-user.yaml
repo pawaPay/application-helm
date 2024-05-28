@@ -76,7 +76,7 @@ spec:
       restartPolicy: Never
   backoffLimit: 2
 ---
-apiVersion: 'kubernetes-client.io/v1'
+apiVersion: 'external-secrets.io/v1beta1'
 kind: ExternalSecret
 metadata:
   name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
@@ -85,13 +85,19 @@ metadata:
 {{ toYaml .Values.initdb.secret.annotations | indent 4 }}
   {{- end }}
 spec:
-  backendType: secretsManager
   data:
-    - key: {{ .Values.environment }}-app-db-user-create
-      name: USER_CREATE_USERNAME
+  - remoteRef:
+      key: {{ .Values.environment }}-app-db-user-create
       property: USER_CREATE_USERNAME
-    - key: {{ .Values.environment }}-app-db-user-create
-      name: USER_CREATE_PASSWORD
+    secretKey: USER_CREATE_USERNAME 
+  - remoteRef:
+      key: {{ .Values.environment }}-app-db-user-create
       property: USER_CREATE_PASSWORD
+    secretKey: USER_CREATE_PASSWORD 
+  secretStoreRef:
+    kind: {{ $.Values.external_secrets.secretStoreRef.kind }}
+    name: {{ $.Values.external_secrets.secretStoreRef.name }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
