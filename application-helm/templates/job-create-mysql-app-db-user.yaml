@@ -99,5 +99,3 @@ spec:
     name: {{ $.Values.external_secrets.secretStoreRef.name }}
 {{- end -}}
 {{- end -}}
-{{- end -}}
-{{- end -}}
