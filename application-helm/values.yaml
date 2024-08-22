@@ -435,3 +435,16 @@ autoscaling:
       name: memory
       targetAverageUtilization: 60
 
+# Network policy is used for denying egress traffic to custom IP adresses
+networkpolicy:
+# -- Flag for enabling or disabling networkpolicy
+  enabled: true
+# -- IPs to deny the egress traffic to
+  except:
+  - 10.0.0.1/32
+  - 10.0.0.2/32
+  - 10.0.0.3/32
+# -- IPs to allow egress traffic to
+  allow:
+  - 10.0.0.3/32
+
