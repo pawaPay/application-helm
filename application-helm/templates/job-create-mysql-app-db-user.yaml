@@ -19,6 +19,7 @@ spec:
           - bash
           - -c
           - >
+            set -eo pipefail;
             echo "DB config parameters:";
             export DB_PROTO="$(cut -d':' -f2 <<<"${SPRING_DATASOURCE_URL}")";
             echo "DB Protocol: ${DB_PROTO}";
@@ -31,20 +32,26 @@ spec:
             TEMP_DB="$(cut -d'/' -f2 <<<"${TEMP_PORT}")";
             export DB="$(cut -d'?' -f1 <<<"${TEMP_DB}")";
             echo "DB: ${DB}";
-            echo "Checking if DB is up";
+            echo "---Waiting for DB to be up---";
             while ! mysqladmin ping -h ${HOST} -P ${PORT} --silent; do sleep 1; done;
-              export SQLDBCREATECOMMAND="CREATE DATABASE IF NOT EXISTS ${DB} CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;";
-              echo "Executing CREATE DATABASE IF NOT EXISTS ${DB}";
-              echo "${SQLDBCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
-              sleep 2;
-              export SQLUSERCREATECOMMAND="CREATE USER IF NOT EXISTS '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';";
-              echo "Executing DB user create";
+            export SQLDBCREATECOMMAND="CREATE DATABASE IF NOT EXISTS ${DB} CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;";
+            echo "---Creating database if not exists ${SQLDBCREATECOMMAND}---";
+            echo "${SQLDBCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+            sleep 2;
+            echo "---Checking if user ${SPRING_DATASOURCE_USERNAME} exists---";
+            USER_EXISTS=$(echo "SELECT COUNT(*) FROM mysql.user WHERE user='${SPRING_DATASOURCE_USERNAME}' AND host='%';" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD} -s -N);
+            if [ "$USER_EXISTS" -eq "0" ]; then
+              echo "---User ${SPRING_DATASOURCE_USERNAME} does not exist. Creating user---";
+              export SQLUSERCREATECOMMAND="CREATE USER '${SPRING_DATASOURCE_USERNAME}'@'%' IDENTIFIED BY '${SPRING_DATASOURCE_PASSWORD}';";
               echo "${SQLUSERCREATECOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
-              sleep 2;
-              export SQLCOMMAND="GRANT ${SQL_PERMISSIONS} ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
-              echo "The Grant Permissions Command to execute is: ${SQLCOMMAND}"
-              echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
-              sleep 4;
+            else
+              echo "---User ${SPRING_DATASOURCE_USERNAME} already exists. Skipping user creation---";
+            fi;
+            sleep 2;
+            export SQLCOMMAND="GRANT ${SQL_PERMISSIONS} ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
+            echo "---Executing grant command: ${SQLCOMMAND}---";
+            echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+            sleep 4;
         env:
         - name: USER_CREATE_USERNAME
           valueFrom:
