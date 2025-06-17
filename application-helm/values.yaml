@@ -349,6 +349,7 @@ initdb:
   mysql:
     auto_db_user_create: false
     permissions: "CREATE, INDEX, SELECT, INSERT, UPDATE, DELETE, ALTER, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE"
+    custom_permissions: "DROP ON TABLE DB.TABLE"
 
 sync_secrets:
   enabled: true

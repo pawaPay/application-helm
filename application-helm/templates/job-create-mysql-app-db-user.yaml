@@ -51,6 +51,11 @@ spec:
             export SQLCOMMAND="GRANT ${SQL_PERMISSIONS} ON ${DB}.* TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
             echo "---Executing grant command: ${SQLCOMMAND}---";
             echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+            if [ -n "${SQL_CUSTOM_PERMISSIONS}" ]; then
+              export SQLCUSTOMCOMMAND="GRANT ${SQL_CUSTOM_PERMISSIONS} TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
+              echo "---Executing custom permissions: ${SQL_CUSTOM_PERMISSIONS}---";
+              echo "${SQLCUSTOMCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
+            fi;
             sleep 4;
         env:
         - name: USER_CREATE_USERNAME
@@ -80,6 +85,8 @@ spec:
               key: SPRING_DATASOURCE_URL
         - name: SQL_PERMISSIONS
           value: {{ .Values.initdb.mysql.permissions }}
+        - name: SQL_CUSTOM_PERMISSIONS
+          value: {{ .Values.initdb.mysql.custom_permissions | default "" }}
       restartPolicy: Never
   backoffLimit: 2
 ---
