@@ -53,7 +53,7 @@ spec:
             echo "${SQLCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
             if [ -n "${SQL_CUSTOM_PERMISSIONS}" ]; then
               export SQLCUSTOMCOMMAND="GRANT ${SQL_CUSTOM_PERMISSIONS} TO '${SPRING_DATASOURCE_USERNAME}'@'%';";
-              echo "---Executing custom permissions: ${SQL_CUSTOM_PERMISSIONS}---";
+              echo "---Executing custom permissions: ${SQLCUSTOMCOMMAND}---";
               echo "${SQLCUSTOMCOMMAND}" | mysql --user ${USER_CREATE_USERNAME} --host ${HOST} --port ${PORT} --password=${USER_CREATE_PASSWORD};
             fi;
             sleep 4;
