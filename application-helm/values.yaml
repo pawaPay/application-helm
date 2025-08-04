@@ -436,3 +436,10 @@ autoscaling:
       name: memory
       targetAverageUtilization: 60
 
+# -- Security Group Policy for pods
+securityGroupPolicy:
+  securityGroups:
+# -- Security Group IDs will be associated with pods
+    groupIds: []
+
+
