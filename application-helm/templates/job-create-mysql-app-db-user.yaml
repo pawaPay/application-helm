@@ -90,7 +90,7 @@ spec:
       restartPolicy: Never
   backoffLimit: 2
 ---
-apiVersion: 'external-secrets.io/v1beta1'
+apiVersion: 'external-secrets.io/v1'
 kind: ExternalSecret
 metadata:
   name: {{ .Values.environment }}-{{ template "application.name" $ }}-app-db-user-create
