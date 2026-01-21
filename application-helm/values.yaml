@@ -145,12 +145,14 @@ deployment:
         - all
   probes:
     startupProbe:
+      enabled: true
       failureThreshold: 30
       periodSeconds: 10
       httpGet:
         path: /actuator/health
         port: actuator
     readinessProbe:
+      enabled: true
       failureThreshold: 3
       periodSeconds: 10
       successThreshold: 1
@@ -160,6 +162,7 @@ deployment:
         path: /actuator/health
         port: actuator
     livenessProbe:
+      enabled: true
       failureThreshold: 3
       periodSeconds: 10
       successThreshold: 1
