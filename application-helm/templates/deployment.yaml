@@ -102,9 +102,24 @@ spec:
         {{- if .Values.externalSecret }}
 {{- include "helpers.list-externalSecret-variables" . | indent  10 }}
         {{- end }}
-{{- if .Values.deployment.probes }}
-{{ toYaml .Values.deployment.probes | indent 8 }}
-{{- end }}
+        {{- with .Values.deployment.probes.startupProbe }}
+        {{- if .enabled }}
+        startupProbe:
+{{- toYaml (omit . "enabled") | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.deployment.probes.readinessProbe }}
+        {{- if .enabled }}
+        readinessProbe:
+{{- toYaml (omit . "enabled") | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.deployment.probes.livenessProbe }}
+        {{- if .enabled }}
+        livenessProbe:
+{{- toYaml (omit . "enabled") | nindent 10 }}
+        {{- end }}
+        {{- end }}
       {{- if or (.Values.deployment.volumeMounts) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
         volumeMounts:
         {{- if (eq .Values.persistence.mountPVC true) }}
