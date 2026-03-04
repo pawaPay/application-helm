@@ -15,6 +15,12 @@ metadata:
   name: {{ template "application.name" . }}
 spec:
   type: {{ .Values.service.type }}
+{{- with .Values.service.clusterIP }}
+  clusterIP: {{ . }}
+{{- end }}
+{{- with .Values.service.sessionAffinity }}
+  sessionAffinity: {{ . }}
+{{- end }}
 {{- if .Values.deployment.enabled }}
   {{- if .Values.deployment.podLabels }}
 {{ toYaml .Values.deployment.podLabels | indent 4 }}
