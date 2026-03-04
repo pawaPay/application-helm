@@ -226,6 +226,10 @@ service:
   annotations:
 # -- Type of Service
   type: ClusterIP
+# -- Can set clusterIP in case of Headless Service
+  clusterIP: ""
+# -- Can set sessionAffinity
+  sessionAffinity: ""
   # -- add ports block to service & deployment, can add ports like PORT_NAME: PORT_NUMBER
   ports:
   - web: 8080
