@@ -29,6 +29,7 @@ spec:
   {{- end }}
   replicas: {{ .Values.rollout.replicas }}
   revisionHistoryLimit: {{ .Values.rollout.revisionHistoryLimit }}
+  progressDeadlineSeconds: {{ .Values.rollout.progressDeadlineSeconds | default 600 }}
   selector:
     matchLabels:
 {{ include "application.labels.selector" . | indent 6 }}
