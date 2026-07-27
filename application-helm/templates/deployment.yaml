@@ -18,6 +18,7 @@ metadata:
 spec:
   replicas: {{ .Values.deployment.replicas }}
   revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  progressDeadlineSeconds: {{ .Values.deployment.progressDeadlineSeconds | default 600 }}
   selector:
     matchLabels:
 {{ include "application.labels.selector" . | indent 6 }}

@@ -9,6 +9,7 @@ metadata:
 {{ toYaml .Values.initdb.annotations | indent 4 }}
   {{- end }}
 spec:
+  activeDeadlineSeconds: {{ .Values.initdb.activeDeadlineSeconds | default 600 }}
   ttlSecondsAfterFinished: 120
   template:
     spec:
