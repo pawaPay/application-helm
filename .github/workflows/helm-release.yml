@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: pawapay-runner
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7.0.1
     
     # https://github.com/helm/chart-releaser-action/issues/13#issuecomment-602058369
     - name: Fetch history
@@ -26,7 +26,7 @@ jobs:
         git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
         
     - name: Run chart-releaser
-      uses: helm/chart-releaser-action@v1.4.0
+      uses: helm/chart-releaser-action@v1.7.0
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       with: 
