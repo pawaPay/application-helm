@@ -64,6 +64,7 @@ The updated values can be seen under `application-helm/values.yaml` and you can 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| service.additionalServices | list | `[]` | Extra Services selecting the same pods, each named `$application-name-<nameSuffix>` (e.g. a headless Service). Per item: `nameSuffix` (required), `type`, `clusterIP`, `sessionAffinity`, `publishNotReadyAddresses`, `labels`, `annotations`, `ports` (defaults to `service.ports`) |
 | service.annotations | string | `nil` | Additional annotations added on Service |
 | service.ingress_port | int | `8080` | ingress_port is used in Ingress & tests |
 | service.labels | string | `nil` | Additional label added on Service |

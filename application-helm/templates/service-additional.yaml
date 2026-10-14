@@ -1,0 +1,43 @@
+{{- if .Values.service }}
+{{- range .Values.service.additionalServices }}
+{{- if not .nameSuffix }}
+{{- fail "service.additionalServices[].nameSuffix is required" }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+{{ include "application.labels" $ | indent 4 }}
+{{ include "application.labels.chart" $ | indent 4 }}
+{{- with .labels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  name: {{ template "application.name" $ }}-{{ .nameSuffix }}
+spec:
+  type: {{ .type | default "ClusterIP" }}
+{{- with .clusterIP }}
+  clusterIP: {{ . }}
+{{- end }}
+{{- with .sessionAffinity }}
+  sessionAffinity: {{ . }}
+{{- end }}
+{{- if .publishNotReadyAddresses }}
+  publishNotReadyAddresses: true
+{{- end }}
+  ports:
+{{- range $ports := (.ports | default $.Values.service.ports) }}
+  {{- range $name, $port := $ports }}
+  - name: {{ $name }}
+    port: {{ $port }}
+    protocol: TCP
+  {{- end }}
+{{- end }}
+  selector:
+{{ include "application.labels.selector" $ | indent 4 }}
+{{- end }}
+{{- end }}
