@@ -236,6 +236,22 @@ service:
   - actuator: 8081
   # -- ingress_port is used in Ingress & tests
   ingress_port: 8080
+  # -- Extra Services alongside the main one, selecting the same pods. Each is named
+  # $application-name-<nameSuffix>. Use it to add e.g. a headless Service without
+  # replacing the main one (clusterIP is immutable, so switching the main Service to
+  # headless means delete + recreate). Empty by default, so nothing is rendered.
+  additionalServices: []
+  # - nameSuffix: headless            # required
+  #   type: ClusterIP                 # default ClusterIP
+  #   clusterIP: None                 # None makes it headless
+  #   sessionAffinity: ""
+  #   publishNotReadyAddresses: false
+  #   labels: {}
+  #   annotations: {}
+  #   # Defaults to service.ports. Ports listed here must also be in service.ports,
+  #   # since that is where the container ports are declared.
+  #   ports:
+  #   - grpc: 9080
 
 ingresses:
 # -- Enable or Disable Ingress
