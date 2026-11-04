@@ -12,7 +12,11 @@ on:
 
 jobs:
   build:
-    runs-on: pawapay-runner
+    # GitHub-hosted: this repo is public, so it must not run on self-hosted runners
+    runs-on: ubuntu-latest
+    # chart-releaser only needs to push gh-pages and create releases
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v7.0.1
     
