@@ -10,15 +10,18 @@ metadata:
   {{- else }}
   name: {{ template "application.name" $ }}-{{ .nameSuffix }}
   {{- end }}
+  {{- /* No chart-version label here: some ingress controllers reconfigure on any Ingress
+  change, labels included, so a chart bump alone would trigger that. */}}
   labels:
 {{ include "application.labels" $ | indent 4 }}
-{{ include "application.labels.chart" $ | indent 4 }}
 {{- if .labels }}
 {{ toYaml .labels | indent 4 }}
 {{- end }}
-{{- if .annotations }}
+{{- /* ingresses.annotations apply to every manifest; a manifest's own annotations win. */}}
+{{- $annotations := merge (deepCopy (.annotations | default dict)) (deepCopy ($.Values.ingresses.annotations | default dict)) }}
+{{- if $annotations }}
   annotations:
-{{ toYaml .annotations | indent 4 }}
+{{ toYaml $annotations | indent 4 }}
 {{- end }}
 spec:
   rules:

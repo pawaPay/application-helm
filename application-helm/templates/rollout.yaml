@@ -100,6 +100,7 @@ spec:
         {{- end }}
         ports:
 {{- include "helpers.list-deployment-ports" . | nindent 12 }}
+        {{- if or .Values.rollout.env .Values.externalSecret }}
         env:
         {{- if .Values.rollout.env }}
 {{ toYaml .Values.rollout.env | indent 10 }}
@@ -107,9 +108,14 @@ spec:
         {{- if .Values.externalSecret }}
 {{- include "helpers.list-externalSecret-variables" . | indent  10 }}
         {{- end }}
+        {{- end }}
 {{- if .Values.rollout.probes }}
 {{ toYaml .Values.rollout.probes | indent 8 }}
 {{- end }}
+        {{- with .Values.rollout.lifecycle }}
+        lifecycle:
+{{ toYaml . | indent 10 }}
+        {{- end }}
       {{- if or (.Values.rollout.volumeMounts) (and (eq .Values.persistence.enabled true) (eq .Values.persistence.mountPVC true) )}} 
         volumeMounts:
         {{- if (eq .Values.persistence.mountPVC true) }}

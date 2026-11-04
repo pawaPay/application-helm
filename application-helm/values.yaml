@@ -18,6 +18,8 @@ rollout:
   - pause: {duration: 60s}
   - setWeight: 80
   - pause: {duration: 20s}
+  # -- Lifecycle hooks for the app container, same as deployment.lifecycle
+  lifecycle: {}
 
 
 deployment:
@@ -183,6 +185,14 @@ deployment:
   # -- Termination Grace Period in Seconds for Pods
   terminationGracePeriodSeconds: 30
 
+  # -- Lifecycle hooks for the app container, rendered as-is. A preStop sleep keeps a
+  # terminating pod serving until every node stops routing new connections to it; the
+  # sleep counts against terminationGracePeriodSeconds.
+  lifecycle: {}
+  #   preStop:
+  #     sleep:
+  #       seconds: 15
+
   # -- Any additional containers besides init and app containers
   additionalContainers:
   # - name: sidecar-contaner
@@ -256,6 +266,9 @@ service:
 ingresses:
 # -- Enable or Disable Ingress
   enabled: false
+  # -- Annotations added to every Ingress manifest; a manifest's own annotations win on conflict
+  annotations: {}
+  #   key: value
   # -- List of Ingresses Manifests - nameSuffix is the suffix to add in name of Ingress, default name is $application-name
   manifests:
   # - nameSuffix: ""

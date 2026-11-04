@@ -54,6 +54,7 @@ The updated values can be seen under `application-helm/values.yaml` and you can 
 | deployment.resources | string | `nil` | Resources to be defined for pod |
 | deployment.revisionHistoryLimit | int | `4` | Revision History Limit for Replica Sets |
 | deployment.terminationGracePeriodSeconds | int | 30 | Termination Grace Period in Seconds for Pods |
+| deployment.lifecycle | object | `{}` | Lifecycle hooks for the app container, rendered as-is. E.g. `preStop.sleep.seconds: 15` keeps a terminating pod serving until every node stops routing new connections to it (counts against `terminationGracePeriodSeconds`). Same key under `rollout` for Rollouts |
 | deployment.securityContext | object | `{"fsGroup":2000,"runAsGroup":3000,"runAsNonRoot":true,"runAsUser":10001}` | Security Context for the pod |
 | deployment.strategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | The strategy used for update of pods  |
 | deployment.tolerations | string | `nil` | Taint tolerations for nodes |
@@ -77,6 +78,9 @@ The updated values can be seen under `application-helm/values.yaml` and you can 
 |-----|------|---------|-------------|
 | ingresses.enabled | bool | `false` | Enable or Disable Ingress |
 | ingresses.manifests | string | `nil` | List of Ingresses Manifests - nameSuffix is the suffix to add in name of Ingress, default name is $application-name |
+| ingresses.annotations | object | `{}` | Annotations added to every Ingress manifest. A manifest's own `annotations` win on conflict |
+
+Ingresses no longer carry the `helm.sh/chart`, `helm.sh/release` and `app.kubernetes.io/managed-by` labels: some ingress controllers reconfigure on any Ingress change, so a chart-version label would trigger that on every chart bump.
 
 ### RBAC
 
