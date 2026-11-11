@@ -13,9 +13,17 @@ spec:
   ttlSecondsAfterFinished: 120
   template:
     spec:
+      {{- if .Values.initdb.securityContext }}
+      securityContext:
+{{ toYaml .Values.initdb.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ template "application.name" $ }}-db-user-creation
         image: mysql:8.0.29-debian
+        {{- if .Values.initdb.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.initdb.containerSecurityContext | indent 10 }}
+        {{- end }}
         command:
           - bash
           - -c

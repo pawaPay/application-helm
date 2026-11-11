@@ -386,6 +386,18 @@ initdb:
     auto_db_user_create: false
     permissions: "CREATE, INDEX, SELECT, INSERT, UPDATE, DELETE, ALTER, REFERENCES, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE"
     custom_permissions: ""
+  # -- Pod Security Context for the db-user-creation job
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 3000
+    fsGroup: 2000
+  # -- Container Security Context for the db-user-creation job
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
 
 sync_secrets:
   enabled: true
@@ -396,6 +408,18 @@ sync_secrets:
     repository: docker.io/organization/repo
     tag: 2024-4-18-python3.7
   envFrom: []
+  # -- Pod Security Context for the sync-secrets job
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 3000
+    fsGroup: 2000
+  # -- Container Security Context for the sync-secrets job
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
 
 external_secrets:
   # -- Annotations on externalSecrets
