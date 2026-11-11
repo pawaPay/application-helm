@@ -408,6 +408,8 @@ sync_secrets:
     repository: docker.io/organization/repo
     tag: 2024-4-18-python3.7
   envFrom: []
+  # -- Working dir for the sync-secrets job (must be writable by the non-root UID)
+  workingDir: /tmp
   # -- Pod Security Context for the sync-secrets job
   securityContext:
     runAsNonRoot: true
