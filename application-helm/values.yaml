@@ -392,36 +392,15 @@ initdb:
     runAsUser: 10001
     runAsGroup: 3000
     fsGroup: 2000
+    seccompProfile:
+      type: RuntimeDefault
   # -- Container Security Context for the db-user-creation job
   containerSecurityContext:
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
-        - all
-
-sync_secrets:
-  enabled: true
-  # -- Annotations on sync-secrets job
-  annotations:
-    # key: value
-  image:
-    repository: docker.io/organization/repo
-    tag: 2024-4-18-python3.7
-  envFrom: []
-  # -- Working dir for the sync-secrets job (must be writable by the non-root UID)
-  workingDir: /tmp
-  # -- Pod Security Context for the sync-secrets job
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 10001
-    runAsGroup: 3000
-    fsGroup: 2000
-  # -- Container Security Context for the sync-secrets job
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - all
+        - ALL
 
 external_secrets:
   # -- Annotations on externalSecrets
