@@ -13,9 +13,17 @@ spec:
   ttlSecondsAfterFinished: 120
   template:
     spec:
+      {{- if .Values.initdb.securityContext }}
+      securityContext:
+{{ toYaml .Values.initdb.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ template "application.name" $ }}-db-user-creation
         image: mysql:8.0.29-debian
+        {{- if .Values.initdb.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.initdb.containerSecurityContext | indent 10 }}
+        {{- end }}
         command:
           - bash
           - -c
@@ -88,6 +96,12 @@ spec:
           value: {{ .Values.initdb.mysql.permissions }}
         - name: SQL_CUSTOM_PERMISSIONS
           value: {{ .Values.initdb.mysql.custom_permissions | default "" }}
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
       restartPolicy: Never
   backoffLimit: 2
 ---
