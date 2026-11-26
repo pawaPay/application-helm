@@ -30,7 +30,7 @@ The updated values can be seen under `application-helm/values.yaml` and you can 
 | deployment.imagePullSecrets | string | `nil` | Secrets used to pull image |
 | deployment.initContainers | string | `nil` | Init containers which runs before the app container |
 | deployment.labels | string | `nil` | Additional labels for Deployment |
-| deployment.nodeSelector | string | `nil` | Select nodes to deploy which matches the following labels   |
+| deployment.nodeSelector | string | `nil` | Select nodes to deploy which matches the following labels. The db-user-creation job (`initdb`) runs on the same nodes |
 | deployment.podAnnotations | string | `nil` | Additional Pod Annotations created by this Deployment |
 | deployment.podLabels | string | `nil` | Additional label added on pod which is used in Service's Label Selector |
 | deployment.probes.livenessProbe.failureThreshold | int | `3` |  |
@@ -57,7 +57,7 @@ The updated values can be seen under `application-helm/values.yaml` and you can 
 | deployment.lifecycle | object | `{}` | Lifecycle hooks for the app container, rendered as-is. E.g. `preStop.sleep.seconds: 15` keeps a terminating pod serving until every node stops routing new connections to it (counts against `terminationGracePeriodSeconds`). Same key under `rollout` for Rollouts |
 | deployment.securityContext | object | `{"fsGroup":2000,"runAsGroup":3000,"runAsNonRoot":true,"runAsUser":10001}` | Security Context for the pod |
 | deployment.strategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | The strategy used for update of pods  |
-| deployment.tolerations | string | `nil` | Taint tolerations for nodes |
+| deployment.tolerations | string | `nil` | Taint tolerations for nodes. The db-user-creation job (`initdb`) gets the same tolerations |
 | deployment.volumeMounts | string | `nil` | Mount path for Volumes, check samples in values file |
 | deployment.volumes | string | `nil` | Volumes to be added to the pod, check samples in values file |
 
