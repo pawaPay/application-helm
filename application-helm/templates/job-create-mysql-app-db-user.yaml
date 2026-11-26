@@ -17,6 +17,17 @@ spec:
       securityContext:
 {{ toYaml .Values.initdb.securityContext | indent 8 }}
       {{- end }}
+      {{- /* On the same nodes as the application's pods: on a cluster whose nodes are all tainted, a job without
+      the application's tolerations would never start */}}
+      {{- $pod := .Values.deployment | default dict }}
+      {{- with $pod.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with $pod.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ template "application.name" $ }}-db-user-creation
         image: mysql:8.0.29-debian
